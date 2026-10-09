@@ -10,3 +10,9 @@ export interface Task {
     priority: TaskPriority;
     isCompleted: boolean;
 }
+export interface TaskDraft {
+    title: string;
+    subject: string;
+    duration: string;
+    priority: TaskPriority;
+}

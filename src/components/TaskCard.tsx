@@ -1,8 +1,10 @@
 import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Task } from '../types/task';
+import { useTheme } from '../context/ThemeContext';
 
 interface TaskCardProps {
     task: Task;
+    onPress: (id: string) => void;
     onToggle: (id: string) => void;
     onDelete: (id: string) => void;
 }
@@ -15,13 +17,16 @@ const priorityNames: Record<Task['priority'], string> = {
 
 export default function TaskCard({
                                      task,
+                                     onPress,
                                      onToggle,
                                      onDelete,
                                  }: TaskCardProps) {
+    const { colors } = useTheme();
+
     const handleDelete = () => {
         Alert.alert(
-            'Удалить тренировку?',
-            `Тренировка «${task.title}» будет удалена.`,
+            'Удалить задачу?',
+            `Задача «${task.title}» будет удалена.`,
             [
                 { text: 'Отмена', style: 'cancel' },
                 {
@@ -34,69 +39,110 @@ export default function TaskCard({
     };
 
     return (
-        <View style={[styles.card, task.isCompleted && styles.completedCard]}>
+        <Pressable
+            onPress={() => onPress(task.id)}
+            style={({ pressed }) => [
+                styles.card,
+                {
+                    backgroundColor: pressed ? colors.cardPressed : colors.card,
+                    borderColor: colors.cardBorder,
+                },
+                task.isCompleted && { opacity: 0.62 },
+            ]}
+        >
             <View style={styles.content}>
                 <Text
                     style={[
                         styles.title,
+                        { color: colors.text },
                         task.isCompleted && styles.completedTitle,
                     ]}
                 >
                     {task.title}
                 </Text>
 
-                <Text style={styles.type}>{task.subject}</Text>
+                <Text style={[styles.type, { color: colors.accent }]}>
+                    {task.subject}
+                </Text>
 
                 <View style={styles.details}>
-                    <Text style={styles.duration}>
+                    <Text
+                        style={[
+                            styles.badge,
+                            {
+                                color: colors.secondaryText,
+                                backgroundColor: colors.inputBackground,
+                            },
+                        ]}
+                    >
                         {task.durationMinutes} мин.
                     </Text>
-                    <Text style={styles.priority}>
+                    <Text
+                        style={[
+                            styles.badge,
+                            {
+                                color: colors.secondaryText,
+                                backgroundColor: colors.inputBackground,
+                            },
+                        ]}
+                    >
                         {priorityNames[task.priority]}
                     </Text>
                 </View>
 
-                <Text style={styles.status}>
+                <Text style={[styles.status, { color: colors.secondaryText }]}>
                     {task.isCompleted ? 'Выполнено' : 'Активна'}
                 </Text>
             </View>
 
             <View style={styles.actions}>
                 <Pressable
-                    style={styles.completeButton}
+                    style={({ pressed }) => [
+                        styles.actionButton,
+                        {
+                            backgroundColor: pressed
+                                ? colors.softPressed
+                                : colors.inputBackground,
+                        },
+                    ]}
                     onPress={() => onToggle(task.id)}
                 >
-                    <Text style={styles.completeButtonText}>
+                    <Text style={[styles.actionText, { color: colors.accent }]}>
                         {task.isCompleted ? 'Вернуть' : 'Выполнить'}
                     </Text>
                 </Pressable>
 
-                <Pressable style={styles.deleteButton} onPress={handleDelete}>
-                    <Text style={styles.deleteButtonText}>Удалить</Text>
+                <Pressable
+                    style={({ pressed }) => [
+                        styles.actionButton,
+                        {
+                            backgroundColor: pressed
+                                ? colors.dangerPressed
+                                : colors.danger,
+                        },
+                    ]}
+                    onPress={handleDelete}
+                >
+                    <Text style={[styles.actionText, { color: colors.dangerText }]}>
+                        Удалить
+                    </Text>
                 </Pressable>
             </View>
-        </View>
+        </Pressable>
     );
 }
 
 const styles = StyleSheet.create({
     card: {
-        backgroundColor: '#FFFFFF',
         borderRadius: 16,
         padding: 16,
         marginBottom: 12,
         borderWidth: 1,
-        borderColor: '#E4D9ED',
-    },
-    completedCard: {
-        opacity: 0.62,
-        backgroundColor: '#F1ECF5',
     },
     content: {
         flex: 1,
     },
     title: {
-        color: '#2D174A',
         fontSize: 18,
         fontWeight: '700',
     },
@@ -104,7 +150,6 @@ const styles = StyleSheet.create({
         textDecorationLine: 'line-through',
     },
     type: {
-        color: '#6F3FA3',
         fontSize: 14,
         fontWeight: '600',
         marginTop: 5,
@@ -114,24 +159,13 @@ const styles = StyleSheet.create({
         marginTop: 10,
         gap: 8,
     },
-    duration: {
-        color: '#65556E',
-        backgroundColor: '#EEE7F4',
-        paddingHorizontal: 9,
-        paddingVertical: 5,
-        borderRadius: 8,
-        fontSize: 12,
-    },
-    priority: {
-        color: '#65556E',
-        backgroundColor: '#EEE7F4',
+    badge: {
         paddingHorizontal: 9,
         paddingVertical: 5,
         borderRadius: 8,
         fontSize: 12,
     },
     status: {
-        color: '#806A8D',
         fontSize: 12,
         marginTop: 9,
     },
@@ -140,27 +174,13 @@ const styles = StyleSheet.create({
         marginTop: 14,
         gap: 8,
     },
-    completeButton: {
+    actionButton: {
         flex: 1,
-        backgroundColor: '#E8DDF0',
         borderRadius: 10,
         paddingVertical: 10,
         alignItems: 'center',
     },
-    completeButtonText: {
-        color: '#5C3288',
-        fontSize: 13,
-        fontWeight: '700',
-    },
-    deleteButton: {
-        flex: 1,
-        backgroundColor: '#F2E8F5',
-        borderRadius: 10,
-        paddingVertical: 10,
-        alignItems: 'center',
-    },
-    deleteButtonText: {
-        color: '#8B4A91',
+    actionText: {
         fontSize: 13,
         fontWeight: '700',
     },

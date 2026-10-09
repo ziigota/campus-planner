@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
     Alert,
     Pressable,
@@ -7,33 +7,111 @@ import {
     TextInput,
     View,
 } from 'react-native';
-import { Task } from '../types/task';
+import { Task, TaskDraft } from '../types/task';
+import { useTheme } from '../context/ThemeContext';
+import { clearDraft, getDraft, saveDraft } from '../storage/draft';
 
-interface TaskFormProps {
-    onAdd: (
-        title: string,
-        subject: string,
-        durationMinutes: number,
-        priority: Task['priority'],
-    ) => void;
+export interface TaskFormValues {
+    title: string;
+    subject: string;
+    durationMinutes: number;
+    priority: Task['priority'];
 }
 
-export default function TaskForm({ onAdd }: TaskFormProps) {
-    const [title, setTitle] = useState('');
-    const [subject, setSubject] = useState('');
-    const [duration, setDuration] = useState('');
-    const [priority, setPriority] = useState<Task['priority']>('medium');
+interface TaskFormProps {
+    initialValues?: Task;
+    submitLabel: string;
+    enableDraft?: boolean;
+    onSubmit: (values: TaskFormValues) => void;
+}
 
-    const handleAdd = () => {
+const priorityOptions: Task['priority'][] = ['low', 'medium', 'high'];
+const priorityLabels: Record<Task['priority'], string> = {
+    low: 'Низкая',
+    medium: 'Средняя',
+    high: 'Высокая',
+};
+
+export default function TaskForm({
+                                     initialValues,
+                                     submitLabel,
+                                     enableDraft = false,
+                                     onSubmit,
+                                 }: TaskFormProps) {
+    const { colors } = useTheme();
+
+    const [title, setTitle] = useState(initialValues?.title ?? '');
+    const [subject, setSubject] = useState(initialValues?.subject ?? '');
+    const [duration, setDuration] = useState(
+        initialValues ? String(initialValues.durationMinutes) : '',
+    );
+    const [priority, setPriority] = useState<Task['priority']>(
+        initialValues?.priority ?? 'medium',
+    );
+    
+    const hydrated = useRef(!enableDraft);
+
+    useEffect(() => {
+        if (!enableDraft || initialValues) {
+            return;
+        }
+
+        let isMounted = true;
+
+        (async () => {
+            const draft = await getDraft();
+            if (!isMounted || !draft) {
+                hydrated.current = true;
+                return;
+            }
+
+            Alert.alert(
+                'Восстановить черновик?',
+                'У вас есть незавершённая задача. Восстановить введённые данные?',
+                [
+                    {
+                        text: 'Нет, начать заново',
+                        style: 'cancel',
+                        onPress: () => {
+                            clearDraft();
+                            hydrated.current = true;
+                        },
+                    },
+                    {
+                        text: 'Восстановить',
+                        onPress: () => {
+                            setTitle(draft.title);
+                            setSubject(draft.subject);
+                            setDuration(draft.duration);
+                            setPriority(draft.priority);
+                            hydrated.current = true;
+                        },
+                    },
+                ],
+            );
+        })();
+
+        return () => {
+            isMounted = false;
+        };
+    }, []);
+
+    useEffect(() => {
+        if (!enableDraft || !hydrated.current) {
+            return;
+        }
+
+        const draft: TaskDraft = { title, subject, duration, priority };
+        saveDraft(draft);
+    }, [enableDraft, title, subject, duration, priority]);
+
+    const handleSubmit = () => {
         const trimmedTitle = title.trim();
         const trimmedSubject = subject.trim();
         const parsedDuration = Number(duration.trim());
 
         if (!trimmedTitle || !trimmedSubject) {
-            Alert.alert(
-                'Заполните поля',
-                'Введите название тренировки и её тип.',
-            );
+            Alert.alert('Заполните поля', 'Введите название задачи и предмет.');
             return;
         }
 
@@ -44,85 +122,131 @@ export default function TaskForm({ onAdd }: TaskFormProps) {
         ) {
             Alert.alert(
                 'Некорректная длительность',
-                'Введите длительность тренировки в минутах.',
+                'Введите длительность задачи в минутах.',
             );
             return;
         }
 
-        onAdd(
-            trimmedTitle,
-            trimmedSubject,
-            parsedDuration,
+        onSubmit({
+            title: trimmedTitle,
+            subject: trimmedSubject,
+            durationMinutes: parsedDuration,
             priority,
-        );
+        });
 
-        setTitle('');
-        setSubject('');
-        setDuration('');
-        setPriority('medium');
+        if (enableDraft) {
+            clearDraft();
+        }
     };
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.heading}>Добавить тренировку</Text>
-
+        <View
+            style={[
+                styles.container,
+                { backgroundColor: colors.card, borderColor: colors.cardBorder },
+            ]}
+        >
             <TextInput
-                style={styles.input}
-                placeholder="Название тренировки"
-                placeholderTextColor="#998BA1"
+                style={[
+                    styles.input,
+                    {
+                        borderColor: colors.inputBorder,
+                        backgroundColor: colors.inputBackground,
+                        color: colors.text,
+                    },
+                ]}
+                placeholder="Название задачи"
+                placeholderTextColor={colors.secondaryText}
                 value={title}
                 onChangeText={setTitle}
             />
 
             <TextInput
-                style={styles.input}
-                placeholder="Тип тренировки"
-                placeholderTextColor="#998BA1"
+                style={[
+                    styles.input,
+                    {
+                        borderColor: colors.inputBorder,
+                        backgroundColor: colors.inputBackground,
+                        color: colors.text,
+                    },
+                ]}
+                placeholder="Предмет"
+                placeholderTextColor={colors.secondaryText}
                 value={subject}
                 onChangeText={setSubject}
             />
 
             <TextInput
-                style={styles.input}
+                style={[
+                    styles.input,
+                    {
+                        borderColor: colors.inputBorder,
+                        backgroundColor: colors.inputBackground,
+                        color: colors.text,
+                    },
+                ]}
                 placeholder="Длительность, минут"
-                placeholderTextColor="#998BA1"
+                placeholderTextColor={colors.secondaryText}
                 value={duration}
                 onChangeText={setDuration}
                 keyboardType="numeric"
             />
 
-            <Text style={styles.label}>Приоритет</Text>
+            <Text style={[styles.label, { color: colors.secondaryText }]}>
+                Приоритет
+            </Text>
 
             <View style={styles.priorityRow}>
-                {(['low', 'medium', 'high'] as Task['priority'][]).map(
-                    (item) => (
+                {priorityOptions.map((item) => {
+                    const selected = priority === item;
+                    return (
                         <Pressable
                             key={item}
-                            style={[
+                            style={({ pressed }) => [
                                 styles.priorityButton,
-                                priority === item && styles.selectedPriority,
+                                {
+                                    backgroundColor: selected
+                                        ? pressed
+                                            ? colors.accentPressed
+                                            : colors.accent
+                                        : pressed
+                                            ? colors.softPressed
+                                            : colors.inputBackground,
+                                },
                             ]}
                             onPress={() => setPriority(item)}
                         >
                             <Text
                                 style={[
                                     styles.priorityText,
-                                    priority === item && styles.selectedPriorityText,
+                                    {
+                                        color: selected
+                                            ? colors.accentText
+                                            : colors.secondaryText,
+                                    },
                                 ]}
                             >
-                                {item === 'low'
-                                    ? 'Низкая'
-                                    : item === 'medium'
-                                        ? 'Средняя'
-                                        : 'Высокая'}
+                                {priorityLabels[item]}
                             </Text>
                         </Pressable>
-                    ),
-                )}
+                    );
+                })}
             </View>
 
-            <Pressable style={styles.addButton} onPress={handleAdd}>
-                <Text style={styles.addButtonText}>Добавить</Text>
+            <Pressable
+                onPress={handleSubmit}
+                style={({ pressed }) => [
+                    styles.submitButton,
+                    {
+                        backgroundColor: pressed
+                            ? colors.accentPressed
+                            : colors.accent,
+                    },
+                ]}
+            >
+                <Text style={[styles.submitButtonText, { color: colors.accentText }]}>
+                    {submitLabel}
+                </Text>
             </Pressable>
         </View>
     );
@@ -130,30 +254,18 @@ export default function TaskForm({ onAdd }: TaskFormProps) {
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: '#FFFFFF',
         borderRadius: 18,
         padding: 16,
         borderWidth: 1,
-        borderColor: '#E4D9ED',
-    },
-    heading: {
-        color: '#2D174A',
-        fontSize: 19,
-        fontWeight: '700',
-        marginBottom: 14,
     },
     input: {
         height: 46,
         borderWidth: 1,
-        borderColor: '#D8C9E2',
         borderRadius: 10,
         paddingHorizontal: 12,
-        color: '#2D174A',
         marginBottom: 10,
-        backgroundColor: '#FCFAFE',
     },
     label: {
-        color: '#5C4968',
         fontSize: 13,
         fontWeight: '600',
         marginTop: 2,
@@ -168,28 +280,21 @@ const styles = StyleSheet.create({
         borderRadius: 9,
         paddingVertical: 9,
         alignItems: 'center',
-        backgroundColor: '#EEE7F4',
-    },
-    selectedPriority: {
-        backgroundColor: '#6F3FA3',
     },
     priorityText: {
-        color: '#654D72',
         fontSize: 11,
         fontWeight: '600',
     },
-    selectedPriorityText: {
-        color: '#FFFFFF',
-    },
-    addButton: {
-        backgroundColor: '#6F3FA3',
+    submitButton: {
         borderRadius: 11,
         paddingVertical: 12,
         alignItems: 'center',
         marginTop: 14,
     },
-    addButtonText: {
-        color: '#FFFFFF',
+    submitButtonPressed: {
+        opacity: 0.85,
+    },
+    submitButtonText: {
         fontSize: 15,
         fontWeight: '700',
     },
