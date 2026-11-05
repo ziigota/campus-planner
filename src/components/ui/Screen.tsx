@@ -7,16 +7,12 @@ import { spacing } from '../../theme/spacing';
 
 interface ScreenProps {
     children: ReactNode;
-    /** Оборачивает содержимое в ScrollView. */
     scroll?: boolean;
-    /** Общие отступы по краям (по умолчанию включены). */
     padded?: boolean;
-    /** Центрирует содержимое по обеим осям. */
     centered?: boolean;
     style?: StyleProp<ViewStyle>;
 }
 
-/** Безопасная область, фон темы и общие отступы экрана. */
 export default function Screen({
                                    children,
                                    scroll = false,
@@ -33,7 +29,6 @@ export default function Screen({
     ];
 
     return (
-        // Верхний отступ уже даёт заголовок навигатора, поэтому top не учитываем.
         <SafeAreaView
             edges={['left', 'right', 'bottom']}
             style={[styles.root, { backgroundColor: colors.background }]}

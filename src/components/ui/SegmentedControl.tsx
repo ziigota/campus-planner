@@ -8,13 +8,10 @@ interface SegmentedControlProps<T extends string> {
     options: ReadonlyArray<LabeledOption<T>>;
     value: T;
     onChange: (value: T) => void;
-    /** Растягивает варианты на всю ширину строки поровну. */
     stretch?: boolean;
-    /** Фон невыбранных вариантов: поле ввода или карточка. */
     surface?: 'input' | 'card';
 }
 
-/** Выбор одного значения из нескольких (фильтры, приоритет, тема). */
 export default function SegmentedControl<T extends string>({
                                                                options,
                                                                value,

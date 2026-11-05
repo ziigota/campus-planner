@@ -16,7 +16,6 @@ interface TaskFormProps {
     onSubmit: (input: CreateTaskInput) => void;
 }
 
-/** Только разметка формы: состояние, валидация и черновик живут в `useTaskForm`. */
 export default function TaskForm({
                                      initialValues,
                                      submitLabel,

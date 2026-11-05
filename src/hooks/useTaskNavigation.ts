@@ -10,7 +10,6 @@ export interface TaskNavigation {
     goBack: () => void;
 }
 
-/** Вся навигация приложения в одном месте: экраны не знают строк маршрутов. */
 export function useTaskNavigation(): TaskNavigation {
     return useMemo<TaskNavigation>(
         () => ({

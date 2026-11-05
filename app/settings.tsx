@@ -1,8 +1,13 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { useTheme } from '../src/context/ThemeContext';
-import { ThemeName } from '../src/storage/theme';
+import { StyleSheet, Text } from 'react-native';
 
-const options: { value: ThemeName; label: string }[] = [
+import Screen from '../src/components/ui/Screen';
+import SegmentedControl from '../src/components/ui/SegmentedControl';
+import { LabeledOption } from '../src/constants/task';
+import { useTheme } from '../src/context/ThemeContext';
+import { spacing } from '../src/theme/spacing';
+import { ThemeName } from '../src/types/theme';
+
+const THEME_OPTIONS: ReadonlyArray<LabeledOption<ThemeName>> = [
     { value: 'light', label: 'Светлая' },
     { value: 'dark', label: 'Тёмная' },
 ];
@@ -11,76 +16,35 @@ export default function SettingsScreen() {
     const { theme, colors, setTheme } = useTheme();
 
     return (
-        <View style={[styles.screen, { backgroundColor: colors.background }]}>
+        <Screen>
             <Text style={[styles.label, { color: colors.secondaryText }]}>
                 Тема оформления
             </Text>
 
-            <View style={styles.optionsRow}>
-                {options.map((option) => {
-                    const selected = theme === option.value;
-                    return (
-                        <Pressable
-                            key={option.value}
-                            style={({ pressed }) => [
-                                styles.optionButton,
-                                {
-                                    backgroundColor: selected
-                                        ? pressed
-                                            ? colors.accentPressed
-                                            : colors.accent
-                                        : pressed
-                                            ? colors.cardPressed
-                                            : colors.card,
-                                    borderColor: colors.cardBorder,
-                                },
-                            ]}
-                            onPress={() => setTheme(option.value)}
-                        >
-                            <Text
-                                style={{
-                                    color: selected ? colors.accentText : colors.text,
-                                    fontWeight: '700',
-                                }}
-                            >
-                                {option.label}
-                            </Text>
-                        </Pressable>
-                    );
-                })}
-            </View>
+            <SegmentedControl
+                options={THEME_OPTIONS}
+                value={theme}
+                onChange={setTheme}
+                stretch
+                surface="card"
+            />
 
             <Text style={[styles.hint, { color: colors.secondaryText }]}>
                 Выбранная тема сохраняется и применяется при следующем запуске
                 приложения.
             </Text>
-        </View>
+        </Screen>
     );
 }
 
 const styles = StyleSheet.create({
-    screen: {
-        flex: 1,
-        padding: 16,
-    },
     label: {
         fontSize: 13,
         fontWeight: '600',
-        marginBottom: 10,
-    },
-    optionsRow: {
-        flexDirection: 'row',
-        gap: 10,
-    },
-    optionButton: {
-        flex: 1,
-        borderWidth: 1,
-        borderRadius: 12,
-        paddingVertical: 14,
-        alignItems: 'center',
+        marginBottom: spacing.sm + 2,
     },
     hint: {
-        marginTop: 18,
+        marginTop: spacing.md + 2,
         fontSize: 13,
         lineHeight: 18,
     },

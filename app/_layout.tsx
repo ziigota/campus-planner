@@ -1,24 +1,19 @@
-import { ActivityIndicator, View } from 'react-native';
+import { ActivityIndicator } from 'react-native';
 import { Stack } from 'expo-router';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { ThemeProvider, useTheme } from '../src/context/ThemeContext';
+
+import Screen from '../src/components/ui/Screen';
 import { TasksProvider } from '../src/context/TasksContext';
+import { ThemeProvider, useTheme } from '../src/context/ThemeContext';
 
 function RootNavigator() {
     const { colors, isLoading } = useTheme();
 
     if (isLoading) {
         return (
-            <View
-                style={{
-                    flex: 1,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    backgroundColor: colors.background,
-                }}
-            >
+            <Screen centered>
                 <ActivityIndicator size="large" color={colors.accent} />
-            </View>
+            </Screen>
         );
     }
 

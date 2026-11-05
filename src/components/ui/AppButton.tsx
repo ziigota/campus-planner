@@ -57,7 +57,6 @@ function getPalette(colors: ThemeColors, variant: AppButtonVariant): Palette {
     }
 }
 
-/** Универсальная кнопка: текст и действие задаются снаружи. */
 export default function AppButton({
                                       title,
                                       onPress,

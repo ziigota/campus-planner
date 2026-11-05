@@ -1,67 +1,42 @@
-import { useEffect } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
-import { router, useLocalSearchParams } from 'expo-router';
-import { useTheme } from '../../../src/context/ThemeContext';
-import { useTasks } from '../../../src/context/TasksContext';
-import TaskForm, { TaskFormValues } from '../../../src/components/TaskForm';
+import TaskForm from '../../../src/components/task/TaskForm';
+import EmptyState from '../../../src/components/ui/EmptyState';
+import Screen from '../../../src/components/ui/Screen';
+import { useRouteTask } from '../../../src/hooks/useRouteTask';
+import { useTaskNavigation } from '../../../src/hooks/useTaskNavigation';
+import { useTasks } from '../../../src/hooks/useTasks';
+import { CreateTaskInput } from '../../../src/types/task';
 
 export default function EditTaskScreen() {
-    const { id } = useLocalSearchParams<{ id: string }>();
-    const { colors } = useTheme();
-    const { getTaskById, updateTask } = useTasks();
-
-    const task = getTaskById(id);
-
-    useEffect(() => {
-        if (!task) {
-            router.replace('/');
-        }
-    }, [task]);
+    const task = useRouteTask();
+    const { updateTask } = useTasks();
+    const navigate = useTaskNavigation();
 
     if (!task) {
         return (
-            <View
-                style={[
-                    styles.screen,
-                    styles.centered,
-                    { backgroundColor: colors.background },
-                ]}
-            >
-                <Text style={{ color: colors.secondaryText }}>
-                    Тренировка не найдена, возвращаемся к списку…
-                </Text>
-            </View>
+            <Screen centered>
+                <EmptyState
+                    icon="🔎"
+                    title="Задача не найдена"
+                    description="Возможно, она была удалена."
+                    actionLabel="К списку задач"
+                    onAction={navigate.goHome}
+                />
+            </Screen>
         );
     }
 
-    const handleSubmit = (values: TaskFormValues) => {
-        updateTask(task.id, values);
-        router.back();
+    const handleSubmit = (input: CreateTaskInput) => {
+        updateTask(task.id, input);
+        navigate.goBack();
     };
 
     return (
-        <ScrollView
-            style={{ backgroundColor: colors.background }}
-            contentContainerStyle={styles.content}
-        >
+        <Screen scroll>
             <TaskForm
                 initialValues={task}
                 submitLabel="Сохранить"
                 onSubmit={handleSubmit}
             />
-        </ScrollView>
+        </Screen>
     );
 }
-
-const styles = StyleSheet.create({
-    screen: {
-        flex: 1,
-    },
-    centered: {
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    content: {
-        padding: 16,
-    },
-});

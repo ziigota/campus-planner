@@ -1,6 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export type ThemeName = 'light' | 'dark';
+import { ThemeName } from '../types/theme';
+
+export type { ThemeName };
 
 const THEME_STORAGE_KEY = '@campus-planner/theme';
 

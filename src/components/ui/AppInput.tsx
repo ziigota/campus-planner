@@ -8,7 +8,6 @@ interface AppInputProps extends TextInputProps {
     error?: string;
 }
 
-/** Подпись, поле ввода и сообщение об ошибке. */
 export default function AppInput({
                                      label,
                                      error,

@@ -1,65 +1,16 @@
-import React, {
+import {
     createContext,
+    ReactNode,
+    useCallback,
     useContext,
     useEffect,
     useMemo,
     useState,
 } from 'react';
-import { getStoredTheme, setStoredTheme, ThemeName } from '../storage/theme';
 
-export interface ThemeColors {
-    background: string;
-    card: string;
-    cardBorder: string;
-    text: string;
-    secondaryText: string;
-    accent: string;
-    accentText: string;
-    accentPressed: string;
-    softPressed: string;
-    cardPressed: string;
-    dangerPressed: string;
-    inputBackground: string;
-    inputBorder: string;
-    danger: string;
-    dangerText: string;
-}
-
-const lightColors: ThemeColors = {
-    background: '#F7F3FC',
-    card: '#FFFFFF',
-    cardBorder: '#E5D8F2',
-    text: '#302044',
-    secondaryText: '#766582',
-    accent: '#613f8e',
-    accentText: '#FFFFFF',
-    accentPressed: '#633A96',
-    softPressed: '#E4D4F5',
-    cardPressed: '#F0E7F9',
-    dangerPressed: '#DDA9D8',
-    inputBackground: '#FCFAFF',
-    inputBorder: '#D9C8E9',
-    danger: '#F8EAF5',
-    dangerText: '#914A88',
-};
-
-const darkColors: ThemeColors = {
-    background: '#21152E',
-    card: '#30203F',
-    cardBorder: '#493358',
-    text: '#F5ECFC',
-    secondaryText: '#C2AFD3',
-    accent: '#613f8e',
-    accentText: '#24152F',
-    accentPressed: '#9D6BD9',
-    softPressed: '#49335D',
-    cardPressed: '#3B284C',
-    dangerPressed: '#794464',
-    inputBackground: '#291B37',
-    inputBorder: '#594067',
-    danger: '#43283F',
-    dangerText: '#F0B8E4',
-};
+import { getStoredTheme, setStoredTheme } from '../storage/theme';
+import { ThemeColors, themeColors } from '../theme/colors';
+import { ThemeName } from '../types/theme';
 
 interface ThemeContextValue {
     theme: ThemeName;
@@ -71,7 +22,7 @@ interface ThemeContextValue {
 
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
 
-export function ThemeProvider({ children }: { children: React.ReactNode }) {
+export function ThemeProvider({ children }: { children: ReactNode }) {
     const [theme, setThemeState] = useState<ThemeName>('light');
     const [isLoading, setIsLoading] = useState(true);
 
@@ -93,30 +44,28 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         };
     }, []);
 
-    const setTheme = (next: ThemeName) => {
+    const setTheme = useCallback((next: ThemeName) => {
         setThemeState(next);
-        setStoredTheme(next);
-    };
+        void setStoredTheme(next);
+    }, []);
 
-    const toggleTheme = () => {
+    const toggleTheme = useCallback(() => {
         setTheme(theme === 'light' ? 'dark' : 'light');
-    };
+    }, [theme, setTheme]);
 
     const value = useMemo<ThemeContextValue>(
         () => ({
             theme,
-            colors: theme === 'light' ? lightColors : darkColors,
+            colors: themeColors[theme],
             isLoading,
             setTheme,
             toggleTheme,
         }),
-        [theme, isLoading],
+        [theme, isLoading, setTheme, toggleTheme],
     );
 
     return (
-        <ThemeContext.Provider value={value}>
-            {children}
-        </ThemeContext.Provider>
+        <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
     );
 }
 

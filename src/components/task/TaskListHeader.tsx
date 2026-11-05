@@ -19,7 +19,6 @@ interface TaskListHeaderProps {
     onAdd: () => void;
 }
 
-/** Шапка списка: заголовок, статистика, кнопка добавления, поиск, фильтр и сортировка. */
 export default function TaskListHeader({
                                            counts,
                                            filter,

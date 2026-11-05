@@ -22,7 +22,7 @@ export interface TaskListState {
     resetFilters: () => void;
 }
 
-/** Состояние списка задач: фильтр, поиск, сортировка и итоговая выборка. */
+
 export function useTaskList(): TaskListState {
     const { tasks } = useTasks();
 

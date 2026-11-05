@@ -1,34 +1,21 @@
-import { ScrollView, StyleSheet } from 'react-native';
-import { router } from 'expo-router';
-import { useTheme } from '../../src/context/ThemeContext';
-import { useTasks } from '../../src/context/TasksContext';
-import TaskForm, { TaskFormValues } from '../../src/components/TaskForm';
+import TaskForm from '../../src/components/task/TaskForm';
+import Screen from '../../src/components/ui/Screen';
+import { useTaskNavigation } from '../../src/hooks/useTaskNavigation';
+import { useTasks } from '../../src/hooks/useTasks';
+import { CreateTaskInput } from '../../src/types/task';
 
 export default function NewTaskScreen() {
-    const { colors } = useTheme();
-    const { addTask } = useTasks();
+    const { createTask } = useTasks();
+    const navigate = useTaskNavigation();
 
-    const handleSubmit = (values: TaskFormValues) => {
-        addTask(values);
-        router.back();
+    const handleSubmit = (input: CreateTaskInput) => {
+        createTask(input);
+        navigate.goBack();
     };
 
     return (
-        <ScrollView
-            style={{ backgroundColor: colors.background }}
-            contentContainerStyle={styles.content}
-        >
-            <TaskForm
-                submitLabel="Добавить"
-                enableDraft
-                onSubmit={handleSubmit}
-            />
-        </ScrollView>
+        <Screen scroll>
+            <TaskForm submitLabel="Добавить" enableDraft onSubmit={handleSubmit} />
+        </Screen>
     );
 }
-
-const styles = StyleSheet.create({
-    content: {
-        padding: 16,
-    },
-});

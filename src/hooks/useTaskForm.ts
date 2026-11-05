@@ -14,7 +14,6 @@ interface UseTaskFormOptions {
     onSubmit: (input: CreateTaskInput) => void;
 }
 
-/** Состояние формы задачи: значения, ошибки, валидация и черновик. */
 export function useTaskForm({
     initialValues,
     enableDraft = false,

@@ -10,10 +10,6 @@ interface UseTaskDraftOptions {
     onRestore: (draft: TaskDraft) => void;
 }
 
-/**
- * Автосохранение черновика формы и предложение восстановить его при открытии.
- * Пока пользователь не ответил на вопрос о восстановлении, черновик не перезаписывается.
- */
 export function useTaskDraft({ enabled, values, onRestore }: UseTaskDraftOptions) {
     const hydrated = useRef(!enabled);
     const onRestoreRef = useRef(onRestore);

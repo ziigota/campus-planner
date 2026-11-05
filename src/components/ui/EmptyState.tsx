@@ -5,7 +5,6 @@ import { radius, spacing } from '../../theme/spacing';
 import AppButton from './AppButton';
 
 interface EmptyStateProps {
-    /** Эмодзи или короткий символ над заголовком. */
     icon?: string;
     title: string;
     description?: string;
@@ -13,7 +12,6 @@ interface EmptyStateProps {
     onAction?: () => void;
 }
 
-/** Заглушка для пустых списков и «не найдено»: иконка, заголовок, описание, действие. */
 export default function EmptyState({
                                        icon,
                                        title,
