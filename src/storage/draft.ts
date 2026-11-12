@@ -11,7 +11,7 @@ function parseDraft(value: unknown): TaskDraft | null {
     }
 
     const record = value as Record<string, unknown>;
-    const { title, subject, duration, dueDate, priority } = record;
+    const { title, subject, duration, dueDate, note, priority } = record;
 
     if (
         typeof title !== 'string' ||
@@ -27,6 +27,7 @@ function parseDraft(value: unknown): TaskDraft | null {
         subject,
         duration,
         dueDate: typeof dueDate === 'string' ? dueDate : '',
+        note: typeof note === 'string' ? note : '',
         priority,
     };
 }

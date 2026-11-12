@@ -23,6 +23,14 @@ export const TasksContext = createContext<TasksContextValue | undefined>(
     undefined,
 );
 
+function withToggledStatus(task: Task): Task {
+    if (task.status === 'completed') {
+        return { ...task, status: 'active', completedAt: undefined };
+    }
+
+    return { ...task, status: 'completed', completedAt: new Date().toISOString() };
+}
+
 export function TasksProvider({ children }: { children: ReactNode }) {
     const [tasks, setTasks] = useState<Task[]>(initialTasks);
     const nextId = useRef(initialTasks.length + 1);
@@ -50,14 +58,7 @@ export function TasksProvider({ children }: { children: ReactNode }) {
 
     const toggleTaskStatus = useCallback((id: string) => {
         setTasks((prev) =>
-            prev.map((task) =>
-                task.id === id
-                    ? {
-                        ...task,
-                        status: task.status === 'completed' ? 'active' : 'completed',
-                    }
-                    : task,
-            ),
+            prev.map((task) => (task.id === id ? withToggledStatus(task) : task)),
         );
     }, []);
 

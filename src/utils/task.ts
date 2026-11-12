@@ -5,7 +5,8 @@ import {
     TaskPriority,
     TaskSortMode,
 } from '../types/task';
-import { parseDueDate } from './date';
+import { isInCurrentWeek, parseDueDate } from './date';
+import { clamp } from './math';
 
 const PRIORITY_WEIGHT: Record<TaskPriority, number> = {
     high: 3,
@@ -48,7 +49,6 @@ export function filterByStatus(
     return tasks.filter((task) => task.status === filter);
 }
 
-
 export function filterTasks(tasks: readonly Task[], query: string): Task[] {
     const normalized = query.trim().toLowerCase();
 
@@ -70,4 +70,33 @@ export function isTaskOverdue(task: Task, now: Date = new Date()): boolean {
 
     const deadline = parseDueDate(task.dueDate);
     return deadline !== null && deadline.getTime() < now.getTime();
+}
+
+export function countCompletedThisWeek(
+    tasks: readonly Task[],
+    now: Date = new Date(),
+): number {
+    return tasks.filter(
+        (task) =>
+            task.status === 'completed' &&
+            isInCurrentWeek(task.completedAt ?? task.createdAt, now),
+    ).length;
+}
+
+
+export function getGoalRatio(completed: number, goal: number): number {
+    if (goal <= 0) {
+        return 0;
+    }
+
+    return clamp(completed / goal, 0, 1);
+}
+
+export function isRecentlyCreated(
+    task: Task,
+    windowMs: number,
+    now: number = Date.now(),
+): boolean {
+    const age = now - Date.parse(task.createdAt);
+    return age >= 0 && age < windowMs;
 }
