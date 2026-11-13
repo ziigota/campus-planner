@@ -7,6 +7,7 @@ import { radius, spacing } from '../../theme/spacing';
 import { CreateTaskInput, Task } from '../../types/task';
 import AppButton from '../ui/AppButton';
 import AppInput from '../ui/AppInput';
+import DateField from '../ui/DateField';
 import SegmentedControl from '../ui/SegmentedControl';
 
 interface TaskFormProps {
@@ -15,7 +16,6 @@ interface TaskFormProps {
     enableDraft?: boolean;
     onSubmit: (input: CreateTaskInput) => void;
 }
-
 export default function TaskForm({
                                      initialValues,
                                      submitLabel,
@@ -45,8 +45,8 @@ export default function TaskForm({
             />
 
             <AppInput
-                label="Предмет"
-                placeholder="Например, Кардио"
+                label="Упражнение"
+                placeholder="Например, Бег"
                 value={values.subject}
                 onChangeText={(text) => setField('subject', text)}
                 error={errors.subject}
@@ -61,14 +61,21 @@ export default function TaskForm({
                 error={errors.duration}
             />
 
-            <AppInput
+            <DateField
                 label="Срок выполнения (необязательно)"
-                placeholder="ГГГГ-ММ-ДД"
                 value={values.dueDate}
-                onChangeText={(text) => setField('dueDate', text)}
-                keyboardType="numbers-and-punctuation"
-                maxLength={10}
+                onChange={(date) => setField('dueDate', date)}
                 error={errors.dueDate}
+            />
+
+            <AppInput
+                label="Заметка (необязательно)"
+                placeholder="Например, лёгкий темп, 5 км"
+                value={values.note}
+                onChangeText={(text) => setField('note', text)}
+                multiline
+                numberOfLines={3}
+                style={styles.noteInput}
             />
 
             <Text style={[styles.label, { color: colors.secondaryText }]}>
@@ -101,6 +108,11 @@ const styles = StyleSheet.create({
         fontWeight: '600',
         marginTop: 2,
         marginBottom: spacing.sm,
+    },
+    noteInput: {
+        height: 90,
+        paddingTop: spacing.sm + spacing.xs,
+        textAlignVertical: 'top',
     },
     submit: {
         marginTop: spacing.md,

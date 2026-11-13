@@ -1,6 +1,11 @@
-import { useLayoutEffect } from 'react';
 import { FlatList, StyleSheet } from 'react-native';
 import { useNavigation } from 'expo-router';
+import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
+import { ClipboardList, SearchX } from 'lucide-react-native';
+import Animated, {
+    LinearTransition,
+} from 'react-native-reanimated';
+import { duration } from '../src/theme/animation';
 
 import TaskCard from '../src/components/task/TaskCard';
 import TaskListHeader from '../src/components/task/TaskListHeader';
@@ -17,7 +22,6 @@ export default function TaskListScreen() {
     const list = useTaskList();
     const navigate = useTaskNavigation();
     const navigation = useNavigation();
-
     useLayoutEffect(() => {
         navigation.setOptions({
             headerRight: () => (
@@ -34,7 +38,7 @@ export default function TaskListScreen() {
     const emptyState =
         tasks.length === 0 ? (
             <EmptyState
-                icon="📋"
+                icon={ClipboardList}
                 title="Список пока пуст"
                 description="Добавьте первую тренировку."
                 actionLabel="Добавить тренировку"
@@ -42,7 +46,7 @@ export default function TaskListScreen() {
             />
         ) : (
             <EmptyState
-                icon="🔍"
+                icon={SearchX}
                 title="Ничего не найдено"
                 description="Измените запрос или выберите другой фильтр."
                 actionLabel="Сбросить поиск и фильтр"
@@ -52,14 +56,16 @@ export default function TaskListScreen() {
 
     return (
         <Screen padded={false}>
-            <FlatList
+            <Animated.FlatList
                 data={list.visibleTasks}
                 keyExtractor={(item) => item.id}
+                itemLayoutAnimation={LinearTransition.duration(duration.normal)}
                 renderItem={({ item }) => (
                     <TaskCard
                         task={item}
                         onPress={navigate.openTask}
                         onToggle={toggleTaskStatus}
+                        onEdit={navigate.openEditTask}
                         onDelete={removeTask}
                     />
                 )}

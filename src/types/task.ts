@@ -13,6 +13,8 @@ export interface Task {
     status: TaskStatus;
     createdAt: string;
     dueDate?: string;
+    note?: string;
+    completedAt?: string;
 }
 
 export type CreateTaskInput = Omit<Task, 'id' | 'createdAt' | 'status'>;
@@ -29,4 +31,5 @@ export interface TaskCounts {
 export interface TaskDraft extends Pick<Task, 'title' | 'subject' | 'priority'> {
     duration: string;
     dueDate: string;
+    note: string;
 }
