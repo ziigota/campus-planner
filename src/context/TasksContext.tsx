@@ -15,6 +15,7 @@ export interface TasksContextValue {
     createTask: (input: CreateTaskInput) => Task;
     updateTask: (id: string, input: UpdateTaskInput) => void;
     removeTask: (id: string) => void;
+    restoreTask: (task: Task) => void;
     toggleTaskStatus: (id: string) => void;
     getTaskById: (id: string) => Task | undefined;
 }
@@ -56,6 +57,15 @@ export function TasksProvider({ children }: { children: ReactNode }) {
         setTasks((prev) => prev.filter((task) => task.id !== id));
     }, []);
 
+    const restoreTask = useCallback((task: Task) => {
+        setTasks((prev) => {
+            if (prev.some((item) => item.id === task.id)) {
+                return prev;
+            }
+            return [task, ...prev];
+        });
+    }, []);
+
     const toggleTaskStatus = useCallback((id: string) => {
         setTasks((prev) =>
             prev.map((task) => (task.id === id ? withToggledStatus(task) : task)),
@@ -73,10 +83,11 @@ export function TasksProvider({ children }: { children: ReactNode }) {
             createTask,
             updateTask,
             removeTask,
+            restoreTask,
             toggleTaskStatus,
             getTaskById,
         }),
-        [tasks, createTask, updateTask, removeTask, toggleTaskStatus, getTaskById],
+        [tasks, createTask, updateTask, removeTask, restoreTask, toggleTaskStatus, getTaskById],
     );
 
     return (

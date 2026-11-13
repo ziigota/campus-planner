@@ -1,6 +1,8 @@
 import { ActivityIndicator } from 'react-native';
 import { Stack } from 'expo-router';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+
 
 import Screen from '../src/components/ui/Screen';
 import { GoalProvider } from '../src/context/GoalContext';
@@ -40,14 +42,16 @@ function RootNavigator() {
 
 export default function RootLayout() {
     return (
-        <SafeAreaProvider>
-            <ThemeProvider>
-                <TasksProvider>
-                    <GoalProvider>
-                        <RootNavigator />
-                    </GoalProvider>
-                </TasksProvider>
-            </ThemeProvider>
-        </SafeAreaProvider>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+            <SafeAreaProvider>
+                <ThemeProvider>
+                    <TasksProvider>
+                        <GoalProvider>
+                            <RootNavigator />
+                        </GoalProvider>
+                    </TasksProvider>
+                </ThemeProvider>
+            </SafeAreaProvider>
+        </GestureHandlerRootView>
     );
 }
