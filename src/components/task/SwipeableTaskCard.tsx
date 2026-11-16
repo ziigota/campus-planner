@@ -52,8 +52,6 @@ export default function SwipeableTaskCard({
     }, [onDelete, task.id, task.title]);
 
     const pan = Gesture.Pan()
-        // Жест начинается только при заметном горизонтальном движении.
-        // Вертикальное движение остаётся прокруткой FlatList.
         .activeOffsetX([-12, 12])
         .failOffsetY([-12, 12])
         .onUpdate((event) => {
@@ -74,8 +72,6 @@ export default function SwipeableTaskCard({
                 runOnJS(showDeleteConfirmation)();
                 return;
             }
-
-            // Если порог не достигнут, карточка мягко возвращается назад.
             translateX.value = withSpring(0);
         });
 

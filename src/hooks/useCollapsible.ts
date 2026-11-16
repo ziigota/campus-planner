@@ -16,7 +16,7 @@ export function useCollapsible(initialExpanded = false): CollapsibleState {
     const toggle = useCallback(() => {
         const next = !expanded;
         setExpanded(next);
-        progress.value =  withDelay(16,withTiming(next ? 1 : 0, timingConfig));
+        progress.value =  withTiming(next ? 1 : 0, timingConfig);
     }, [expanded, progress]);
 
     return { expanded, progress, toggle };
