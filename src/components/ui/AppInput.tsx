@@ -1,4 +1,5 @@
 import { StyleSheet, Text, TextInput, TextInputProps, View } from 'react-native';
+import { useState } from 'react';
 
 import { useTheme } from '../../context/ThemeContext';
 import { radius, spacing } from '../../theme/spacing';
@@ -15,6 +16,7 @@ export default function AppInput({
                                      ...inputProps
                                  }: AppInputProps) {
     const { colors } = useTheme();
+    const [isFocused, setIsFocused] = useState(false);
 
     return (
         <View style={styles.wrapper}>
@@ -27,10 +29,22 @@ export default function AppInput({
             <TextInput
                 placeholderTextColor={colors.secondaryText}
                 {...inputProps}
+                onFocus={(event) => {
+                    setIsFocused(true);
+                    inputProps.onFocus?.(event);
+                }}
+                onBlur={(event) => {
+                    setIsFocused(false);
+                    inputProps.onBlur?.(event);
+                }}
                 style={[
                     styles.input,
                     {
-                        borderColor: error ? colors.dangerText : colors.inputBorder,
+                        borderColor: error
+                            ? colors.dangerText
+                            : isFocused
+                                ? colors.accentPressed
+                                : colors.inputBorder,
                         backgroundColor: colors.inputBackground,
                         color: colors.text,
                     },

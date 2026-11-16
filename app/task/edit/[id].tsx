@@ -5,6 +5,7 @@ import { useRouteTask } from '../../../src/hooks/useRouteTask';
 import { useTaskNavigation } from '../../../src/hooks/useTaskNavigation';
 import { useTasks } from '../../../src/hooks/useTasks';
 import { CreateTaskInput } from '../../../src/types/task';
+import {SearchX} from "lucide-react-native";
 
 export default function EditTaskScreen() {
     const task = useRouteTask();
@@ -15,7 +16,7 @@ export default function EditTaskScreen() {
         return (
             <Screen centered>
                 <EmptyState
-                    icon="🔎"
+                    icon={SearchX}
                     title="Задача не найдена"
                     description="Возможно, она была удалена."
                     actionLabel="К списку задач"

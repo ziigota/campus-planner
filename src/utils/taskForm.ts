@@ -15,6 +15,7 @@ export function taskToFormValues(task?: Task): TaskDraft {
             subject: '',
             duration: '',
             dueDate: '',
+            note: '',
             priority: 'medium',
         };
     }
@@ -24,6 +25,7 @@ export function taskToFormValues(task?: Task): TaskDraft {
         subject: task.subject,
         duration: String(task.durationMinutes),
         dueDate: task.dueDate ?? '',
+        note: task.note ?? '',
         priority: task.priority,
     };
 }
@@ -34,6 +36,7 @@ export function validateTaskForm(values: TaskDraft): TaskFormValidation {
     const durationText = values.duration.trim();
     const durationMinutes = Number(durationText);
     const dueDate = values.dueDate.trim();
+    const note = values.note.trim();
 
     const errors: TaskFormErrors = {};
 
@@ -69,6 +72,7 @@ export function validateTaskForm(values: TaskDraft): TaskFormValidation {
             durationMinutes,
             priority: values.priority,
             dueDate: dueDate || undefined,
+            note: note || undefined,
         },
     };
 }

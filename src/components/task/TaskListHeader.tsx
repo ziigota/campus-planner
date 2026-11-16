@@ -7,6 +7,7 @@ import { TaskCounts, TaskFilter, TaskSortMode } from '../../types/task';
 import AppButton from '../ui/AppButton';
 import AppInput from '../ui/AppInput';
 import SegmentedControl from '../ui/SegmentedControl';
+import TaskProgress from './TaskProgress';
 
 interface TaskListHeaderProps {
     counts: TaskCounts;
@@ -18,7 +19,6 @@ interface TaskListHeaderProps {
     onSortChange: (mode: TaskSortMode) => void;
     onAdd: () => void;
 }
-
 export default function TaskListHeader({
                                            counts,
                                            filter,
@@ -63,6 +63,8 @@ export default function TaskListHeader({
                     </Text>
                 </View>
             </View>
+
+            <TaskProgress />
 
             <AppButton title="Добавить тренировку" onPress={onAdd} />
 

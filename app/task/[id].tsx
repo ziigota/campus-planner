@@ -1,4 +1,5 @@
 import { StyleSheet, View } from 'react-native';
+import { SearchX } from 'lucide-react-native';
 
 import TaskDetails from '../../src/components/task/TaskDetails';
 import AppButton from '../../src/components/ui/AppButton';
@@ -18,7 +19,7 @@ export default function TaskDetailsScreen() {
         return (
             <Screen centered>
                 <EmptyState
-                    icon="🔎"
+                    icon={SearchX}
                     title="Задача не найдена"
                     description="Возможно, она была удалена."
                     actionLabel="К списку задач"

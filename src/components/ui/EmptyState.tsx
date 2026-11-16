@@ -1,11 +1,12 @@
 import { StyleSheet, Text, View } from 'react-native';
+import type { LucideIcon } from 'lucide-react-native';
 
 import { useTheme } from '../../context/ThemeContext';
 import { radius, spacing } from '../../theme/spacing';
 import AppButton from './AppButton';
 
 interface EmptyStateProps {
-    icon?: string;
+    icon?: LucideIcon;
     title: string;
     description?: string;
     actionLabel?: string;
@@ -13,7 +14,7 @@ interface EmptyStateProps {
 }
 
 export default function EmptyState({
-                                       icon,
+                                       icon: Icon,
                                        title,
                                        description,
                                        actionLabel,
@@ -23,7 +24,11 @@ export default function EmptyState({
 
     return (
         <View style={[styles.container, { backgroundColor: colors.card }]}>
-            {icon ? <Text style={styles.icon}>{icon}</Text> : null}
+            {Icon ? (
+                <View style={styles.icon}>
+                    <Icon size={36} color={colors.accent} strokeWidth={1.75} />
+                </View>
+            ) : null}
 
             <Text style={[styles.title, { color: colors.text }]}>{title}</Text>
 
@@ -53,7 +58,6 @@ const styles = StyleSheet.create({
         marginTop: spacing.sm,
     },
     icon: {
-        fontSize: 32,
         marginBottom: spacing.sm,
     },
     title: {

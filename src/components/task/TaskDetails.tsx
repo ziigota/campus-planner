@@ -4,7 +4,7 @@ import { PRIORITY_LABELS, STATUS_LABELS } from '../../constants/task';
 import { useTheme } from '../../context/ThemeContext';
 import { radius, spacing } from '../../theme/spacing';
 import { Task } from '../../types/task';
-import { formatDueDate } from '../../utils/date';
+import { formatDate } from '../../utils/date';
 import { isTaskOverdue } from '../../utils/task';
 
 interface DetailRowProps {
@@ -54,12 +54,13 @@ export default function TaskDetails({ task }: { task: Task }) {
                     label="Срок:"
                     value={
                         isOverdue
-                            ? `${formatDueDate(task.dueDate)} (просрочено)`
-                            : formatDueDate(task.dueDate)
+                            ? `${formatDate(task.dueDate)} (просрочено)`
+                            : formatDate(task.dueDate)
                     }
                     isWarning={isOverdue}
                 />
             ) : null}
+            {task.note ? <DetailRow label="Заметка:" value={task.note} /> : null}
             <DetailRow label="Статус:" value={STATUS_LABELS[task.status]} />
         </View>
     );

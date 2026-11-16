@@ -15,6 +15,7 @@ export interface TasksContextValue {
     createTask: (input: CreateTaskInput) => Task;
     updateTask: (id: string, input: UpdateTaskInput) => void;
     removeTask: (id: string) => void;
+    restoreTask: (task: Task) => void;
     toggleTaskStatus: (id: string) => void;
     getTaskById: (id: string) => Task | undefined;
 }
@@ -22,6 +23,14 @@ export interface TasksContextValue {
 export const TasksContext = createContext<TasksContextValue | undefined>(
     undefined,
 );
+
+function withToggledStatus(task: Task): Task {
+    if (task.status === 'completed') {
+        return { ...task, status: 'active', completedAt: undefined };
+    }
+
+    return { ...task, status: 'completed', completedAt: new Date().toISOString() };
+}
 
 export function TasksProvider({ children }: { children: ReactNode }) {
     const [tasks, setTasks] = useState<Task[]>(initialTasks);
@@ -48,16 +57,18 @@ export function TasksProvider({ children }: { children: ReactNode }) {
         setTasks((prev) => prev.filter((task) => task.id !== id));
     }, []);
 
+    const restoreTask = useCallback((task: Task) => {
+        setTasks((prev) => {
+            if (prev.some((item) => item.id === task.id)) {
+                return prev;
+            }
+            return [task, ...prev];
+        });
+    }, []);
+
     const toggleTaskStatus = useCallback((id: string) => {
         setTasks((prev) =>
-            prev.map((task) =>
-                task.id === id
-                    ? {
-                        ...task,
-                        status: task.status === 'completed' ? 'active' : 'completed',
-                    }
-                    : task,
-            ),
+            prev.map((task) => (task.id === id ? withToggledStatus(task) : task)),
         );
     }, []);
 
@@ -72,10 +83,11 @@ export function TasksProvider({ children }: { children: ReactNode }) {
             createTask,
             updateTask,
             removeTask,
+            restoreTask,
             toggleTaskStatus,
             getTaskById,
         }),
-        [tasks, createTask, updateTask, removeTask, toggleTaskStatus, getTaskById],
+        [tasks, createTask, updateTask, removeTask, restoreTask, toggleTaskStatus, getTaskById],
     );
 
     return (
