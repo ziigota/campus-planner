@@ -8,18 +8,18 @@ import Animated, {
     LinearTransition,
 } from 'react-native-reanimated';
 
-import SwipeableTaskCard from '../src/components/task/SwipeableTaskCard';
-import TaskListHeader from '../src/components/task/TaskListHeader';
-import AppButton from '../src/components/ui/AppButton';
-import EmptyState from '../src/components/ui/EmptyState';
-import Screen from '../src/components/ui/Screen';
-import { useTaskList } from '../src/hooks/useTaskList';
-import { useTheme } from '../src/context/ThemeContext';
-import { useTaskNavigation } from '../src/hooks/useTaskNavigation';
-import { useTasks } from '../src/hooks/useTasks';
-import { duration } from '../src/theme/animation';
-import { spacing } from '../src/theme/spacing';
-import { Task } from '../src/types/task';
+import SwipeableTaskCard from '../../src/components/task/SwipeableTaskCard';
+import TaskListHeader from '../../src/components/task/TaskListHeader';
+import AppButton from '../../src/components/ui/AppButton';
+import EmptyState from '../../src/components/ui/EmptyState';
+import Screen from '../../src/components/ui/Screen';
+import { useTaskList } from '../../src/hooks/useTaskList';
+import { useTheme } from '../../src/context/ThemeContext';
+import { useTaskNavigation } from '../../src/hooks/useTaskNavigation';
+import { useTasks } from '../../src/hooks/useTasks';
+import { duration } from '../../src/theme/animation';
+import { spacing } from '../../src/theme/spacing';
+import { Task } from '../../src/types/task';
 
 const UNDO_TIMEOUT_MS = 5000;
 

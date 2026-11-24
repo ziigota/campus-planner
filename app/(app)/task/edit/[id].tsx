@@ -1,10 +1,10 @@
-import TaskForm from '../../../src/components/task/TaskForm';
-import EmptyState from '../../../src/components/ui/EmptyState';
-import Screen from '../../../src/components/ui/Screen';
-import { useRouteTask } from '../../../src/hooks/useRouteTask';
-import { useTaskNavigation } from '../../../src/hooks/useTaskNavigation';
-import { useTasks } from '../../../src/hooks/useTasks';
-import { CreateTaskInput } from '../../../src/types/task';
+import TaskForm from '../../../../src/components/task/TaskForm';
+import EmptyState from '../../../../src/components/ui/EmptyState';
+import Screen from '../../../../src/components/ui/Screen';
+import { useRouteTask } from '../../../../src/hooks/useRouteTask';
+import { useTaskNavigation } from '../../../../src/hooks/useTaskNavigation';
+import { useTasks } from '../../../../src/hooks/useTasks';
+import { CreateTaskInput } from '../../../../src/types/task';
 import {SearchX} from "lucide-react-native";
 
 export default function EditTaskScreen() {

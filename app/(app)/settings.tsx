@@ -1,14 +1,16 @@
-import { StyleSheet, Text } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
-import Screen from '../src/components/ui/Screen';
-import SegmentedControl from '../src/components/ui/SegmentedControl';
-import Stepper from '../src/components/ui/Stepper';
-import { MAX_WEEKLY_GOAL, MIN_WEEKLY_GOAL } from '../src/constants/goal';
-import { LabeledOption } from '../src/constants/task';
-import { useTheme } from '../src/context/ThemeContext';
-import { useWeeklyGoal } from '../src/hooks/useWeeklyGoal';
-import { spacing } from '../src/theme/spacing';
-import { ThemeName } from '../src/types/theme';
+import { useAuth } from '../../src/auth/AuthContext';
+import AppButton from '../../src/components/ui/AppButton';
+import Screen from '../../src/components/ui/Screen';
+import SegmentedControl from '../../src/components/ui/SegmentedControl';
+import Stepper from '../../src/components/ui/Stepper';
+import { MAX_WEEKLY_GOAL, MIN_WEEKLY_GOAL } from '../../src/constants/goal';
+import { LabeledOption } from '../../src/constants/task';
+import { useTheme } from '../../src/context/ThemeContext';
+import { useWeeklyGoal } from '../../src/hooks/useWeeklyGoal';
+import { spacing } from '../../src/theme/spacing';
+import { ThemeName } from '../../src/types/theme';
 
 const THEME_OPTIONS: ReadonlyArray<LabeledOption<ThemeName>> = [
     { value: 'light', label: 'Светлая' },
@@ -18,6 +20,7 @@ const THEME_OPTIONS: ReadonlyArray<LabeledOption<ThemeName>> = [
 export default function SettingsScreen() {
     const { theme, colors, setTheme } = useTheme();
     const { weeklyGoal, setWeeklyGoal } = useWeeklyGoal();
+    const { user, signOut } = useAuth();
 
     return (
         <Screen>
@@ -53,6 +56,13 @@ export default function SettingsScreen() {
                 Прогресс на главном экране показывает, сколько тренировок вы
                 выполнили на этой неделе (с понедельника) относительно цели.
             </Text>
+
+            <View style={styles.account}>
+                <Text style={[styles.label, { color: colors.secondaryText }]}>
+                    Учётная запись{user ? `: ${user.name} (${user.login})` : ''}
+                </Text>
+                <AppButton title="Выйти" variant="danger" onPress={signOut} />
+            </View>
         </Screen>
     );
 }
@@ -65,6 +75,9 @@ const styles = StyleSheet.create({
     },
     sectionLabel: {
         marginTop: spacing.lg,
+    },
+    account: {
+        marginTop: spacing.xl,
     },
     hint: {
         marginTop: spacing.md + 2,
